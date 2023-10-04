@@ -132,4 +132,33 @@ public class OrderValidatorTest extends TestCase
         assertEquals(validatedOrder.getOrderValidationCode(), OrderValidationCode.CARD_NUMBER_INVALID);
     }
 
+    public void testCreditCardNumber16Characters() {
+        Order order = createValidOrder();
+
+        int leftLimit = 0;
+        int rightLimit = 127;
+        Random random = new Random();
+        int targetStringLength = 16;
+
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCreditCardNumber(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
 }
