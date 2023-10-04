@@ -9,7 +9,9 @@ import uk.ac.ed.inf.ilp.data.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 
@@ -23,7 +25,7 @@ public class OrderValidatorTest extends TestCase
 
         order.setCreditCardInformation(
                 new CreditCardInformation(
-                        "0123456789101234",
+                        "0000000000000000",
                         String.format("%02d/%02d", ThreadLocalRandom.current().nextInt(1, 12), ThreadLocalRandom.current().nextInt(24, 30)),
                         "222"
                 )
@@ -37,19 +39,43 @@ public class OrderValidatorTest extends TestCase
     }
 
     public static Restaurant createValidRestaurant() {
+        // Creates valid restaurant
         return new Restaurant("testRestaurant",
                 new LngLat(55.945535152517735, -3.1912869215011597),
-                new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.FRIDAY},
-                new Pizza[]{new Pizza("Pizza A", 2300)}
-        );
+                new DayOfWeek[] {
+                        DayOfWeek.MONDAY, DayOfWeek.FRIDAY
+                },
+                new Pizza[]{
+                        new Pizza("Pizza A", 2300),
+                        new Pizza("Pizza B", 2400),
+                        new Pizza("Pizza C", 2500)
+                }
+        ) ;
     }
 
     public static Order createValidPizza(Restaurant restaurant, Order order) {
-        // get a random restaurant
-        // and load the order items plus the price
+        ArrayList<Pizza> currentOrder = new ArrayList<>();
+        Pizza[] pizzas = order.getPizzasInOrder();
+        if (pizzas.length > 0) {
+            Collections.addAll(currentOrder, pizzas);
+        }
+
+        // Takes first pizza from given restaurant
         Pizza pizza = restaurant.menu()[0];
-        order.setPizzasInOrder(new Pizza[]{pizza});
-        order.setPriceTotalInPence(pizza.priceInPence() + SystemConstants.ORDER_CHARGE_IN_PENCE);
+        int currentPrice = order.getPriceTotalInPence();
+
+        currentOrder.add(pizza);
+
+        Pizza[] newOrder = currentOrder.toArray(new Pizza[0]);
+
+        order.setPizzasInOrder(newOrder);
+
+        // If there was nothing in the order
+        if (currentPrice == 0) {
+            order.setPriceTotalInPence(pizza.priceInPence() + SystemConstants.ORDER_CHARGE_IN_PENCE);
+        } else {
+            order.setPriceTotalInPence(currentPrice + pizza.priceInPence());
+        }
 
         return order;
     }
@@ -63,6 +89,8 @@ public class OrderValidatorTest extends TestCase
                 order.getOrderNo() +
                 "\nOrder Contents: " +
                 Arrays.toString(order.getPizzasInOrder()) +
+                "\nPriceTotalInPence: " +
+                order.getPriceTotalInPence() +
                 "\n -- Credit card info \nCreditCardNumber: " +
                 order.getCreditCardInformation().getCreditCardNumber() +
                 "\nCCV: " +
@@ -567,5 +595,62 @@ public class OrderValidatorTest extends TestCase
 
         assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testTotalPriceIsNegative() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+
+        order.setPriceTotalInPence(randomNumber);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
+    }
+
+    public void testTotalPriceIsZero() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        order.setPriceTotalInPence(0);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testTotalPriceTwoPizzas() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+        order = createValidPizza(restaurant, order);
+
+        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+
+        order.setPriceTotalInPence(randomNumber);
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
     }
 }
