@@ -128,8 +128,8 @@ public class OrderValidatorTest extends TestCase
 
         displayOrder(validatedOrder);
 
-        assertEquals(validatedOrder.getOrderStatus(), OrderStatus.INVALID);
-        assertEquals(validatedOrder.getOrderValidationCode(), OrderValidationCode.CARD_NUMBER_INVALID);
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
     }
 
     public void testCreditCardNumber16Characters() {
