@@ -25,6 +25,7 @@ public class LngLatTests {
 
         LngLat pointA = new LngLat(x1, y1); LngLat pointB = new LngLat(x2, y2);
 
+        // Yeah I did just need to pretty much put the answer in here, not ideal but eh
         assertTrue(handler.distanceTo(pointA, pointB) == Math.hypot(Math.abs(x1 - x2), Math.abs(y1 - y2)));
     }
 
@@ -171,6 +172,7 @@ public class LngLatTests {
         LngLat oldPos = new LngLat(randomLng, randomLat);
         LngLat nextPos = handler.nextPosition(oldPos, 999);
 
+        // If we've got a hover code (999) the two positions are the same
         assertTrue(nextPos.equals(oldPos));
     }
 
