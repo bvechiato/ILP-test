@@ -1,6 +1,7 @@
 package uk.ac.ed.info;
 
 import junit.framework.TestCase;
+import org.junit.jupiter.api.RepeatedTest;
 import uk.ac.ed.inf.ilp.constant.OrderStatus;
 import uk.ac.ed.inf.ilp.constant.OrderValidationCode;
 import uk.ac.ed.inf.ilp.constant.SystemConstants;
@@ -71,6 +72,7 @@ public class OrderValidatorTest extends TestCase
         );
     }
 
+    @RepeatedTest(100)
     public void testCreditCardNumber16Numbers() {
         Order order = createValidOrder();
 
@@ -99,6 +101,7 @@ public class OrderValidatorTest extends TestCase
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
+    @RepeatedTest(100)
     public void testCreditCardNumberOnlyNumbers() {
         Order order = createValidOrder();
 
@@ -130,6 +133,7 @@ public class OrderValidatorTest extends TestCase
         assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
     }
 
+    @RepeatedTest(100)
     public void testCreditCardNumber16Characters() {
         Order order = createValidOrder();
 
