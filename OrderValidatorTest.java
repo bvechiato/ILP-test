@@ -282,4 +282,320 @@ public class OrderValidatorTest extends TestCase
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateDigits() {
+        Order order = createValidOrder();
+
+        int leftLimit = 0;
+        int rightLimit = 127;
+        Random random = new Random();
+        int targetStringLength = 5;
+
+        while (targetStringLength == 5) {
+            targetStringLength = (int)(Math.random()*100);
+        }
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDate5Digits() {
+        Order order = createValidOrder();
+
+        int leftLimit = 0;
+        int rightLimit = 127;
+        Random random = new Random();
+        int targetStringLength = 5;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDate5Numbers() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 5;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDate4NumbersRandomSeparator() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 5;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        char c = (char) ('a' + random.nextInt(26));
+
+        generatedString = generatedString.substring(0,2) + c + generatedString.substring(2);
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDate4NumbersSlashSeparator() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 4;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        generatedString = generatedString.substring(0,2) + '/' + generatedString.substring(2);
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateInPast() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 2;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+
+        int randomYear = ThreadLocalRandom.current().nextInt(10, currentYear - 1);
+
+        generatedString = generatedString + '/' + randomYear;
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateValidMonthInFuture() {
+        Order order = createValidOrder();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+
+        int randomMonth = ThreadLocalRandom.current().nextInt(1, 13);
+        int randomYear = ThreadLocalRandom.current().nextInt(currentYear + 1, 99);
+
+
+        String generatedString;
+        if (randomMonth < 10) {
+            generatedString = "0" + randomMonth + '/' + randomYear;
+        } else {
+            generatedString = Integer.toString(randomMonth) + '/' + randomYear;
+        }
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateInvalidMonthInFuture() {
+        Order order = createValidOrder();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+
+        int randomMonth = ThreadLocalRandom.current().nextInt(13, 100);
+        int randomYear = ThreadLocalRandom.current().nextInt(currentYear + 1, 99);
+
+        String generatedString = Integer.toString(randomMonth) + '/' + randomYear;
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateInvalidMonthCurrentYear() {
+        Order order = createValidOrder();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+
+        int randomMonth = ThreadLocalRandom.current().nextInt(13, 100);
+
+        String generatedString = Integer.toString(randomMonth) + '/' + currentYear;
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateInvalidDate() {
+        Order order = createValidOrder();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+
+        int randomMonth = ThreadLocalRandom.current().nextInt(13, 99);
+        int randomYear = ThreadLocalRandom.current().nextInt(0,currentYear);
+
+        String generatedString;
+        if (randomYear < 10) {
+            generatedString = Integer.toString(randomMonth) + "/0" + randomYear;
+        } else {
+            generatedString = Integer.toString(randomMonth) + '/' + randomYear;
+        }
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCExpiryDateCurrentDate() {
+        Order order = createValidOrder();
+
+        int currentYear = LocalDate.now().getYear() - 2000;
+        int currentMonth = LocalDate.now().getMonthValue();
+
+        String generatedString = Integer.toString(currentMonth) + '/' + currentYear;
+
+        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
 }
