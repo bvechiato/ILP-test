@@ -162,4 +162,124 @@ public class OrderValidatorTest extends TestCase
         assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
     }
 
+    @RepeatedTest(100)
+    public void testCreditCardCVVDigits() {
+        Order order = createValidOrder();
+
+        int leftLimit = 0;
+        int rightLimit = 127;
+        Random random = new Random();
+        int targetStringLength = 3;
+
+        while (targetStringLength == 3) {
+            targetStringLength = (int)(Math.random()*100);
+        }
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCvv(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCVVNumbers() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 3;
+
+        while (targetStringLength == 3) {
+            targetStringLength = (int)(Math.random()*100);
+        }
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCvv(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCVV3Digits() {
+        Order order = createValidOrder();
+
+        int leftLimit = 0;
+        int rightLimit = 127;
+        Random random = new Random();
+        int targetStringLength = 3;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCvv(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testCreditCardCVV3Numbers() {
+        Order order = createValidOrder();
+
+        int leftLimit = 48;
+        int rightLimit = 57;
+        Random random = new Random();
+        int targetStringLength = 3;
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        order.getCreditCardInformation().setCvv(generatedString);
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
 }
