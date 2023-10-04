@@ -74,14 +74,13 @@ public class OrderValidatorTest extends TestCase
     public void testCreditCardNumber16Numbers() {
         Order order = createValidOrder();
 
-        int leftLimit = 0;
-        int rightLimit = 9;
+        int leftLimit = 48;
+        int rightLimit = 57;
         Random random = new Random();
         int targetStringLength = 16;
 
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
@@ -103,8 +102,8 @@ public class OrderValidatorTest extends TestCase
     public void testCreditCardNumberOnlyNumbers() {
         Order order = createValidOrder();
 
-        int leftLimit = 0;
-        int rightLimit = 9;
+        int leftLimit = 48;
+        int rightLimit = 57;
         Random random = new Random();
         int targetStringLength = 16;
 
@@ -113,7 +112,6 @@ public class OrderValidatorTest extends TestCase
         }
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
@@ -142,7 +140,6 @@ public class OrderValidatorTest extends TestCase
 
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
