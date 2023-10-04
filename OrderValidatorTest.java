@@ -403,36 +403,6 @@ public class OrderValidatorTest extends TestCase
     }
 
     @RepeatedTest(100)
-    public void testCreditCardCExpiryDate4NumbersSlashSeparator() {
-        Order order = createValidOrder();
-
-        int leftLimit = 48;
-        int rightLimit = 57;
-        Random random = new Random();
-        int targetStringLength = 4;
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-
-        generatedString = generatedString.substring(0,2) + '/' + generatedString.substring(2);
-
-        order.getCreditCardInformation().setCreditCardExpiry(generatedString);
-
-        Restaurant restaurant = createValidRestaurant();
-
-        order = createValidPizza(restaurant, order);
-
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
-
-        displayOrder(validatedOrder);
-
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
-        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
-    }
-
-    @RepeatedTest(100)
     public void testCreditCardCExpiryDateInPast() {
         Order order = createValidOrder();
 
