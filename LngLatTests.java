@@ -187,10 +187,10 @@ public class LngLatTests {
         LngLat oldPos = new LngLat(randomLng, randomLat);
         LngLat nextPos = handler.nextPosition(oldPos, randomAngle);
 
-        // Need to convert to radians here
+        // Need to convert to radians here (edit from stefi: no you don't)
         // NGL the only way to check this one is just to put the implementation in
-        double dLng = 0.00015 * Math.sin((randomAngle - 90) * Math.PI / 180);
-        double dLat = 0.00015 * Math.cos((randomAngle - 90) * Math.PI / 180);
+        double dLng = 0.00015 * Math.cos((randomAngle));
+        double dLat = 0.00015 * Math.sin((randomAngle));
 
         assertTrue(nextPos.equals(new LngLat(oldPos.lng() + dLng, oldPos.lat() + dLat)));
     }
