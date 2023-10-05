@@ -23,7 +23,9 @@ import java.util.Random;
  *  - only one error per test
  *  - we don't need to test order number validation
  */
-public class OrderValidatorTest extends TestCase {
+public class OrderValidatorTest extends TestCase
+{
+    public static Random random = new Random();
     public static Order createValidOrder() {
         var order = new Order();
         order.setOrderNo(String.format("%08X", ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE)));
@@ -48,7 +50,7 @@ public class OrderValidatorTest extends TestCase {
         // Creates valid restaurant
         return new Restaurant("testRestaurant",
                 new LngLat(55.945535152517735, -3.1912869215011597),
-                new DayOfWeek[]{
+                new DayOfWeek[] {
                         DayOfWeek.MONDAY, DayOfWeek.FRIDAY
                 },
                 new Pizza[]{
@@ -56,7 +58,7 @@ public class OrderValidatorTest extends TestCase {
                         new Pizza("Pizza B", 2400),
                         new Pizza("Pizza C", 2500)
                 }
-        );
+        ) ;
     }
 
     public static Restaurant createRestaurant(String name, DayOfWeek[] openOn, Pizza[] menu) {
@@ -64,7 +66,7 @@ public class OrderValidatorTest extends TestCase {
                 new LngLat(55.945535152517735, -3.1912869215011597),
                 openOn,
                 menu
-        );
+        ) ;
     }
 
     public static Order createValidPizza(Restaurant restaurant, Order order) {
@@ -74,8 +76,9 @@ public class OrderValidatorTest extends TestCase {
             Collections.addAll(currentOrder, pizzas);
         }
 
-        // Takes first pizza from given restaurant
-        Pizza pizza = restaurant.menu()[0];
+        // Takes random pizza from given restaurant
+        int noPizzas = restaurant.menu().length;
+        Pizza pizza = restaurant.menu()[random.nextInt(noPizzas)];
         int currentPrice = order.getPriceTotalInPence();
 
         currentOrder.add(pizza);
@@ -153,7 +156,7 @@ public class OrderValidatorTest extends TestCase {
         int targetStringLength = 16;
 
         while (targetStringLength == 16) {
-            targetStringLength = (int) (Math.random() * 100);
+            targetStringLength = (int)(Math.random()*100);
         }
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -171,7 +174,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -181,7 +184,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 0;
         int rightLimit = 127;
-        Random random = new Random();
         int targetStringLength = 16;
 
 
@@ -246,11 +248,10 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 0;
         int rightLimit = 127;
-        Random random = new Random();
         int targetStringLength = 3;
 
         while (targetStringLength == 3) {
-            targetStringLength = (int) (Math.random() * 100);
+            targetStringLength = (int)(Math.random()*100);
         }
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -268,7 +269,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -278,11 +279,10 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 48;
         int rightLimit = 57;
-        Random random = new Random();
         int targetStringLength = 3;
 
         while (targetStringLength == 3) {
-            targetStringLength = (int) (Math.random() * 100);
+            targetStringLength = (int)(Math.random()*100);
         }
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -300,7 +300,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -310,7 +310,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 0;
         int rightLimit = 127;
-        Random random = new Random();
         int targetStringLength = 3;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -328,7 +327,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -338,7 +337,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 48;
         int rightLimit = 57;
-        Random random = new Random();
         int targetStringLength = 3;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -356,7 +354,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
@@ -375,7 +373,7 @@ public class OrderValidatorTest extends TestCase {
         displayOrder(validatedOrder);
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
+        assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
     }
 
     @RepeatedTest(100)
@@ -393,7 +391,7 @@ public class OrderValidatorTest extends TestCase {
         displayOrder(validatedOrder);
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
+        assertEquals(OrderValidationCode.CVV_INVALID, validatedOrder.getOrderValidationCode());
     }
 
     @RepeatedTest(100)
@@ -402,11 +400,10 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 0;
         int rightLimit = 127;
-        Random random = new Random();
         int targetStringLength = 5;
 
         while (targetStringLength == 5) {
-            targetStringLength = (int) (Math.random() * 100);
+            targetStringLength = (int)(Math.random()*100);
         }
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -424,7 +421,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -434,7 +431,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 0;
         int rightLimit = 127;
-        Random random = new Random();
         int targetStringLength = 5;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -452,7 +448,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -462,7 +458,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 48;
         int rightLimit = 57;
-        Random random = new Random();
         int targetStringLength = 5;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -480,7 +475,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -490,7 +485,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 48;
         int rightLimit = 57;
-        Random random = new Random();
         int targetStringLength = 5;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -500,7 +494,7 @@ public class OrderValidatorTest extends TestCase {
 
         char c = (char) ('a' + random.nextInt(26));
 
-        generatedString = generatedString.substring(0, 2) + c + generatedString.substring(2);
+        generatedString = generatedString.substring(0,2) + c + generatedString.substring(2);
 
         order.getCreditCardInformation().setCreditCardExpiry(generatedString);
 
@@ -512,7 +506,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -522,7 +516,6 @@ public class OrderValidatorTest extends TestCase {
 
         int leftLimit = 48;
         int rightLimit = 57;
-        Random random = new Random();
         int targetStringLength = 2;
 
         String generatedString = random.ints(leftLimit, rightLimit + 1)
@@ -546,7 +539,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -556,9 +549,8 @@ public class OrderValidatorTest extends TestCase {
 
         int currentYear = LocalDate.now().getYear() - 2000;
 
-        int randomMonth = ThreadLocalRandom.current().nextInt(1, 13);
-        int randomYear = ThreadLocalRandom.current().nextInt(currentYear + 1, 99);
-
+        int randomMonth = random.nextInt(1, 13);
+        int randomYear = random.nextInt(currentYear + 1, 99);
 
         String generatedString;
         if (randomMonth < 10) {
@@ -577,7 +569,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
@@ -587,8 +579,8 @@ public class OrderValidatorTest extends TestCase {
 
         int currentYear = LocalDate.now().getYear() - 2000;
 
-        int randomMonth = ThreadLocalRandom.current().nextInt(13, 100);
-        int randomYear = ThreadLocalRandom.current().nextInt(currentYear + 1, 99);
+        int randomMonth = random.nextInt(13, 100);
+        int randomYear = random.nextInt(currentYear + 1, 99);
 
         String generatedString = Integer.toString(randomMonth) + '/' + randomYear;
 
@@ -602,7 +594,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -612,7 +604,7 @@ public class OrderValidatorTest extends TestCase {
 
         int currentYear = LocalDate.now().getYear() - 2000;
 
-        int randomMonth = ThreadLocalRandom.current().nextInt(13, 100);
+        int randomMonth = random.nextInt(13, 100);
 
         String generatedString = Integer.toString(randomMonth) + '/' + currentYear;
 
@@ -626,7 +618,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -636,8 +628,8 @@ public class OrderValidatorTest extends TestCase {
 
         int currentYear = LocalDate.now().getYear() - 2000;
 
-        int randomMonth = ThreadLocalRandom.current().nextInt(13, 99);
-        int randomYear = ThreadLocalRandom.current().nextInt(0, currentYear);
+        int randomMonth = random.nextInt(13, 99);
+        int randomYear = random.nextInt(0,currentYear);
 
         String generatedString;
         if (randomYear < 10) {
@@ -656,7 +648,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
@@ -679,7 +671,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
@@ -698,7 +690,7 @@ public class OrderValidatorTest extends TestCase {
         displayOrder(validatedOrder);
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
     @RepeatedTest(100)
@@ -716,7 +708,7 @@ public class OrderValidatorTest extends TestCase {
         displayOrder(validatedOrder);
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.CARD_NUMBER_INVALID, validatedOrder.getOrderValidationCode());
+        assertEquals(OrderValidationCode.EXPIRY_DATE_INVALID, validatedOrder.getOrderValidationCode());
     }
 
     @RepeatedTest(100)
@@ -727,7 +719,7 @@ public class OrderValidatorTest extends TestCase {
 
         order = createValidPizza(restaurant, order);
 
-        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+        int randomNumber = random.nextInt(-100000, 0);
 
         order.setPriceTotalInPence(randomNumber);
 
@@ -735,7 +727,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
     }
 
@@ -752,7 +744,7 @@ public class OrderValidatorTest extends TestCase {
 
         displayOrder(validatedOrder);
 
-        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus()) ;
         assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
     }
 
@@ -765,7 +757,7 @@ public class OrderValidatorTest extends TestCase {
         order = createValidPizza(restaurant, order);
         order = createValidPizza(restaurant, order);
 
-        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+        int randomNumber = random.nextInt(-100000, 0);
 
         order.setPriceTotalInPence(randomNumber);
         Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
@@ -787,7 +779,7 @@ public class OrderValidatorTest extends TestCase {
         int oldPrice = order.getPriceTotalInPence();
         order.setPriceTotalInPence(oldPrice - SystemConstants.ORDER_CHARGE_IN_PENCE);
 
-        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+        int randomNumber = random.nextInt(-100000, 0);
 
         order.setPriceTotalInPence(randomNumber);
         Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
@@ -810,7 +802,7 @@ public class OrderValidatorTest extends TestCase {
         int oldPrice = order.getPriceTotalInPence();
         order.setPriceTotalInPence(oldPrice + SystemConstants.ORDER_CHARGE_IN_PENCE);
 
-        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+        int randomNumber = random.nextInt(-100000, 0);
 
         order.setPriceTotalInPence(randomNumber);
         Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
@@ -827,10 +819,10 @@ public class OrderValidatorTest extends TestCase {
 
         Restaurant restaurant1 = createRestaurant(
                 "yuckyRestaurant :(",
-                new DayOfWeek[]{
+                new DayOfWeek[] {
                         DayOfWeek.MONDAY, DayOfWeek.FRIDAY
                 },
-                new Pizza[]{
+                new Pizza[] {
                         new Pizza("Yucky Pizza", 2000)
                 }
         );
@@ -838,7 +830,7 @@ public class OrderValidatorTest extends TestCase {
 
         order = createValidPizza(restaurant2, order);
 
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant1, restaurant2});
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant1, restaurant2 });
 
         displayOrder(validatedOrder);
 
@@ -852,10 +844,10 @@ public class OrderValidatorTest extends TestCase {
 
         Restaurant restaurant1 = createRestaurant(
                 "yuckyRestaurant :(",
-                new DayOfWeek[]{
+                new DayOfWeek[] {
                         DayOfWeek.MONDAY, DayOfWeek.FRIDAY
                 },
-                new Pizza[]{
+                new Pizza[] {
                         new Pizza("Yucky Pizza", 2000)
                 }
         );
@@ -865,7 +857,7 @@ public class OrderValidatorTest extends TestCase {
         order = createValidPizza(restaurant2, order);
 
         // Only pass in other restaurant in list
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant1});
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant1 });
 
         displayOrder(validatedOrder);
 
@@ -874,18 +866,154 @@ public class OrderValidatorTest extends TestCase {
     }
 
     @RepeatedTest(100)
-    public void testPizzaNoRestaurant() {
+    public void testPizzaInRestaurantLowercase() {
         Order order = createValidOrder();
 
         Restaurant restaurant = createValidRestaurant();
 
         order = createValidPizza(restaurant, order);
 
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{null});
+        Pizza[] pizzas = order.getPizzasInOrder();
+        pizzas[0] = new Pizza(pizzas[0].name().toLowerCase(), pizzas[0].priceInPence());
+
+        order.setPizzasInOrder(pizzas);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testPizzaInRestaurantUppercase() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        Pizza[] pizzas = order.getPizzasInOrder();
+        pizzas[0] = new Pizza(pizzas[0].name().toUpperCase(), pizzas[0].priceInPence());
+
+        order.setPizzasInOrder(pizzas);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testPizzasFromDifferentRestaurants() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant1 = createValidRestaurant();
+        Restaurant restaurant2 = createRestaurant(
+                "yuckyRestaurant :(",
+                new DayOfWeek[] {
+                        DayOfWeek.MONDAY, DayOfWeek.FRIDAY
+                },
+                new Pizza[] {
+                        new Pizza("Yucky Pizza", 2000)
+                }
+        );
+
+        order = createValidPizza(restaurant1, order);
+        order = createValidPizza(restaurant2, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant1, restaurant2 });
 
         displayOrder(validatedOrder);
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.PIZZA_NOT_DEFINED, validatedOrder.getOrderValidationCode());
+        assertEquals(OrderValidationCode.PIZZA_FROM_MULTIPLE_RESTAURANTS, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testPizzasFromSameRestaurant() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant1 = createValidRestaurant();
+        Restaurant restaurant2 = createRestaurant(
+                "yuckyRestaurant :(",
+                new DayOfWeek[] {
+                        DayOfWeek.MONDAY, DayOfWeek.FRIDAY
+                },
+                new Pizza[] {
+                        new Pizza("Yucky Pizza", 2000)
+                }
+        );
+
+        order = createValidPizza(restaurant1, order);
+        order = createValidPizza(restaurant1, order);
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant1, restaurant2 });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void test4PizzasInOneOrder() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        for (int x = 0; x < 4; x++) {
+            order = createValidPizza(restaurant, order);
+        }
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void test5PlusPizzasInOneOrder() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        int randomNumber = random.nextInt(5, 99);
+
+        for (int x = 0; x < randomNumber; x++) {
+            order = createValidPizza(restaurant, order);
+        }
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.MAX_PIZZA_COUNT_EXCEEDED, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void test3OrLessPizzasInOneOrder() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        int randomNumber = random.nextInt(1, 4);
+
+        for (int x = 0; x < randomNumber; x++) {
+            order = createValidPizza(restaurant, order);
+        }
+
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 }
