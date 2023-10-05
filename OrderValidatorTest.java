@@ -653,4 +653,55 @@ public class OrderValidatorTest extends TestCase
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
         assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
     }
+
+
+    /*
+     * testTotalPriceNoPizzas isn't necessary,
+     * we assume there is at least one pizza RE Glienecke @66_f1 on Piazza
+     */
+
+    @RepeatedTest(100)
+    public void testTotalPriceOnePizzaNoOrderFee() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+
+        int oldPrice = order.getPriceTotalInPence();
+        order.setPriceTotalInPence(oldPrice - SystemConstants.ORDER_CHARGE_IN_PENCE);
+
+        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+
+        order.setPriceTotalInPence(randomNumber);
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
+    }
+
+    @RepeatedTest(100)
+    public void testTotalPriceTwoPizzasOrderFeeTwice() {
+        Order order = createValidOrder();
+
+        Restaurant restaurant = createValidRestaurant();
+
+        order = createValidPizza(restaurant, order);
+        order = createValidPizza(restaurant, order);
+
+        int oldPrice = order.getPriceTotalInPence();
+        order.setPriceTotalInPence(oldPrice + SystemConstants.ORDER_CHARGE_IN_PENCE);
+
+        int randomNumber = ThreadLocalRandom.current().nextInt(-100000, 0);
+
+        order.setPriceTotalInPence(randomNumber);
+        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{restaurant});
+
+        displayOrder(validatedOrder);
+
+        assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
+        assertEquals(OrderValidationCode.TOTAL_INCORRECT, validatedOrder.getOrderValidationCode());
+    }
 }
