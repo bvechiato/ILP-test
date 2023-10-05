@@ -879,10 +879,8 @@ public class OrderValidatorTest extends TestCase {
 
         Restaurant restaurant = createValidRestaurant();
 
-        // Create order in second restaurant
         order = createValidPizza(restaurant, order);
 
-        // Only pass in other restaurant in list
         Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[]{null});
 
         displayOrder(validatedOrder);
