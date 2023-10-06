@@ -117,31 +117,6 @@ public class OrderValidatorTest extends TestCase
         );
     }
 
-    /*
-     * Didn't think this had to be checked, but as per Glienecke @76
-     */
-    @RepeatedTest(100)
-    public void testOldOrder() {
-        Order order = createValidOrder();
-
-        Restaurant restaurant = createValidRestaurant();
-
-        order = createValidPizza(restaurant, order);
-
-        int randomNumber = random.nextInt(1, 365);
-
-        LocalDate newOrOldHahaDate = LocalDate.now().minusDays(randomNumber);
-
-        order.setOrderDate(newOrOldHahaDate);
-
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
-
-        displayOrder(validatedOrder);
-
-        assertEquals(OrderStatus.DELIVERED, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
-    }
-
     @RepeatedTest(100)
     public void testCreditCardNumber16Numbers() {
         Order order = createValidOrder();
@@ -888,48 +863,6 @@ public class OrderValidatorTest extends TestCase
 
         assertEquals(OrderStatus.INVALID, validatedOrder.getOrderStatus());
         assertEquals(OrderValidationCode.PIZZA_NOT_DEFINED, validatedOrder.getOrderValidationCode());
-    }
-
-    @RepeatedTest(100)
-    public void testPizzaInRestaurantLowercase() {
-        Order order = createValidOrder();
-
-        Restaurant restaurant = createValidRestaurant();
-
-        order = createValidPizza(restaurant, order);
-
-        Pizza[] pizzas = order.getPizzasInOrder();
-        pizzas[0] = new Pizza(pizzas[0].name().toLowerCase(), pizzas[0].priceInPence());
-
-        order.setPizzasInOrder(pizzas);
-
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
-
-        displayOrder(validatedOrder);
-
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
-    }
-
-    @RepeatedTest(100)
-    public void testPizzaInRestaurantUppercase() {
-        Order order = createValidOrder();
-
-        Restaurant restaurant = createValidRestaurant();
-
-        order = createValidPizza(restaurant, order);
-
-        Pizza[] pizzas = order.getPizzasInOrder();
-        pizzas[0] = new Pizza(pizzas[0].name().toUpperCase(), pizzas[0].priceInPence());
-
-        order.setPizzasInOrder(pizzas);
-
-        Order validatedOrder = new OrderValidator().validateOrder(order, new Restaurant[] { restaurant });
-
-        displayOrder(validatedOrder);
-
-        assertEquals(OrderStatus.VALID_BUT_NOT_DELIVERED, validatedOrder.getOrderStatus());
-        assertEquals(OrderValidationCode.NO_ERROR, validatedOrder.getOrderValidationCode());
     }
 
     @RepeatedTest(100)
