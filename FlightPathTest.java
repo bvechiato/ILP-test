@@ -65,4 +65,21 @@ public class FlightPathTest extends TestCase {
 
         assertTrue(path.isEmpty());
     }
+
+    @RepeatedTest(100)
+    public void testPathFromNullPosition() throws IOException, InterruptedException {
+        NamedRegion[] noFlyZones = REST_ACCESS.getNoFlyZones(uk.ac.ed.inf.TestConstants.ENDPOINT);
+        FlightPathCalculator pathCalculator = new FlightPathCalculator(uk.ac.ed.inf.TestConstants.CENTRAL_AREA, noFlyZones);
+
+        List<LngLat> path = pathCalculator.findPath(null, uk.ac.ed.inf.TestConstants.APPLETON_TOWER);
+
+        if (!path.isEmpty()) {
+            System.out.println("\tPath found: ");
+            for (LngLat point : path) {
+                System.out.println("[" + point.lng() + ", " + point.lat() + "],");
+            }
+        }
+
+        assertTrue(path.isEmpty());
+    }
 }
