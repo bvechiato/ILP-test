@@ -5,10 +5,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import uk.ac.ed.inf.ilp.data.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 
 /*
@@ -81,5 +79,46 @@ public class FlightPathTest extends TestCase {
         }
 
         assertTrue(path.isEmpty());
+    }
+
+    public void createDroneGeojson(ArrayList<Flightpath> flightpaths, LocalDate date) throws JsonProcessingException {
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        // Adds the FeatureCollection to the geogson
+        JsonObject geoJson = new JsonObject();
+        geoJson.addProperty("type", "FeatureCollection");
+
+        JsonArray features = new JsonArray();
+
+        // Creates the feature
+        JsonObject feature = new JsonObject();
+        feature.addProperty("type", "Feature");
+
+        // Creates the LineString
+        JsonObject geometry = new JsonObject();
+        geometry.addProperty("type", "LineString");
+
+        JsonArray coordsArray = new JsonArray();
+
+        // Adds each point in flightpath to a JsonArray
+        for (Flightpath flightpath : flightpaths) {
+
+            JsonArray point = new JsonArray();
+            point.add(flightpath.fromLongitude());
+            point.add(flightpath.fromLatitude());
+            coordsArray.add(point);
+        }
+
+        // Adds the JsonArray geometry, adding it to the feature
+        geometry.add("coordinates", coordsArray);
+        feature.add("geometry", geometry);
+        feature.add("properties", new JsonObject());
+
+        // Adds the feature to the list of features, then adding that to the geogson
+        features.add(feature);
+        geoJson.add("features", features);
+
+        writer("drone", gson.toJson(geoJson), date);
     }
 }
